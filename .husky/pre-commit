@@ -1,0 +1,15 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running ESLint..."
+
+npm run lint
+
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+  echo "❌ ESLint errors detected. Commit blocked."
+  exit 1
+fi
+
+echo "✅ ESLint passed. Proceeding with commit."
