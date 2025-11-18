@@ -1,0 +1,28 @@
+{
+  "name": "todo-api",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Simple Todo API using Express and SQLite",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "NODE_ENV=test mocha --recursive --exit tests/**/*.test.js",
+    "test:unit": "NODE_ENV=test mocha tests/todoService.test.js tests/todoController.test.js tests/todoModel.test.js",
+    "test:integration": "NODE_ENV=test mocha tests/todoRoutes.test.js",
+    "test:coverage": "NODE_ENV=test mocha 'tests/**/*.test.js'"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^11.1.0",
+    "nodemon": "^3.1.0",
+    "sinon": "^18.0.0",
+    "supertest": "^7.0.0"
+  }
+}
