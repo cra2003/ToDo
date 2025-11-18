@@ -1,7 +1,7 @@
 import "./setup.js";
 import { expect } from "chai";
 import { TodoModel } from "../src/models/todoModel.js";
-import { db } from "../src/models/db.js";
+import { db } from "../db.js";
 
 describe("TodoModel - DB Integration", () => {
   beforeEach(() => {
