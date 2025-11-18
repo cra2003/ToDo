@@ -40,7 +40,7 @@ fi || {
 echo "✅ All tests passed."
 
 echo "🔍 Running Knip (dependency checking)..."
-npx knip --strict --debug || {
+npx knip --strict || {
   echo "Failed"
 }
 
