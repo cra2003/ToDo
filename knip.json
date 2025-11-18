@@ -1,8 +1,20 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": ["src/app.js"],
-  "project": ["src/**/*.js"],
+  "project": ["src/**/*.js", "tests/**/*.js"],
   "ignore": [],
-  "ignoreDependencies": ["husky", "prettier", "eslint", "knip"],
-  "ignoreBinaries": ["husky"]
+  "ignoreDependencies": [
+    "husky",
+    "prettier",
+    "eslint",
+    "knip",
+    "c8",
+    "mocha",
+    "nodemon"
+  ],
+  "ignoreBinaries": ["husky"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreExports": {
+    "src/models/todoModel.js": ["db"]
+  }
 }
