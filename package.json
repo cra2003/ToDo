@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
+    "lint": "eslint src/**/*.js tests/**/*.js",
     "test": "NODE_ENV=test mocha --recursive --exit tests/**/*.test.js",
     "test:unit": "NODE_ENV=test mocha tests/todoService.test.js tests/todoController.test.js tests/todoModel.test.js",
     "test:integration": "NODE_ENV=test mocha tests/todoRoutes.test.js",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "chai": "^5.1.0",
+    "eslint": "^9.39.1",
     "mocha": "^11.1.0",
     "nodemon": "^3.1.0",
     "sinon": "^18.0.0",

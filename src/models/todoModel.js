@@ -16,14 +16,14 @@ export const TodoModel = {
     const existing = this.getById(id);
     if (!existing) return null;
 
-    const updated = {
+    const updated_info = {
       title: data.title ?? existing.title,
       completed: data.completed ?? existing.completed,
       priority: data.priority ?? existing.priority,
     };
 
     db.prepare('UPDATE todos SET title=?, completed=?, priority=? WHERE id=?')
-      .run(updated.title, updated.completed, updated.priority, id);
+      .run(updated_info.title, updated_info.completed, updated_info.priority, id);
 
     return this.getById(id);
   },
