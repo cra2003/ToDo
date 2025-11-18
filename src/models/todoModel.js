@@ -8,21 +8,15 @@ export const TodoModel = {
     return db.prepare("SELECT * FROM todos WHERE id = ?").get(id);
   },
   create({ title, priority }) {
-    const stmt = db.prepare(
-      "INSERT INTO todos (title, priority) VALUES (?, ?)",
-    );
-    const result = stmt.run(title, priority || "medium");
+    const stmt=db.prepare("INSERT INTO todos (title, priority) VALUES (?, ?)");
+    const result=stmt.run(title,priority||"medium");
     return this.getById(result.lastInsertRowid);
   },
   update(id, data) {
     const existing = this.getById(id);
     if (!existing) return null;
 
-    const updated_info = {
-      title: data.title ?? existing.title,
-      completed: data.completed ?? existing.completed,
-      priority: data.priority ?? existing.priority,
-    };
+    const updated_info={title:data.title??existing.title,completed:data.completed??existing.completed,priority:data.priority??existing.priority};
 
     db.prepare(
       "UPDATE todos SET title=?, completed=?, priority=? WHERE id=?",

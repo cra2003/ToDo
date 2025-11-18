@@ -2,12 +2,15 @@
 . "$(dirname "$0")/_/husky.sh"
 
 echo "🔍 Running Prettier (auto-format)..."
-npx prettier --write . --log-level warn
+npx prettier --write . --log-level log
 PRETTIER_RESULT=$?
 
 if [ $PRETTIER_RESULT -ne 0 ]; then
-  echo "⚠️  Prettier encountered issues, but continuing..."
+  echo "❌ Prettier failed. Fix formatting issues before committing."
+  exit 1
 fi
+
+echo "✅ Prettier formatting complete"
 
 echo "🔍 Running ESLint..."
 
