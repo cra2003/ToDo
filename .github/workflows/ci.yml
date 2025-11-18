@@ -1,0 +1,73 @@
+name: CI Pipeline
+
+# Run CI on any push or pull request
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+jobs:
+  ci:
+    name: Run Lint, Tests, Formatting & Knip
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------------
+      # Checkout Repo
+      # ------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------
+      # Setup Node
+      # ------------------------------------------------------
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # ------------------------------------------------------
+      # Install dependencies
+      # ------------------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+
+      # ------------------------------------------------------
+      # Prettier — formatting validation
+      # DOES NOT auto-fix, only warns/fails
+      # ------------------------------------------------------
+      - name: Run Prettier check
+        run: npx prettier --check .
+
+      # ------------------------------------------------------
+      # ESLint — static analysis
+      # ------------------------------------------------------
+      - name: Run ESLint
+        run: npm run lint
+
+      # ------------------------------------------------------
+      # Knip — unused dependencies & files
+      # ------------------------------------------------------
+      - name: Run knip (dependency analysis)
+        run: npx knip
+
+      # ------------------------------------------------------
+      # Run Tests — Mocha, Jest, Vitest... (your choice)
+      # ------------------------------------------------------
+      - name: Run tests
+        run: npm test
+
+      # ------------------------------------------------------
+      # Build step (optional)
+      # Skip if your project has no build command
+      # ------------------------------------------------------
+      - name: Build project
+        run: |
+          if npm run | grep -q "build"; then
+            echo "Running build..."
+            npm run build
+          else
+            echo "⚠️ No build script found — skipping."
+          fi
+
