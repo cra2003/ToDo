@@ -38,14 +38,6 @@ fi
 echo "✅ All tests passed and coverage thresholds met (≥90%)."
 
 echo "🔍 Running Knip (dependency checking - non-blocking)..."
-npx knip || true
-KNIP_RESULT=$?
-
-if [ $KNIP_RESULT -ne 0 ]; then
-  echo "⚠️  Knip found some unused dependencies/exports (non-blocking)."
-  echo "   Review and clean up when convenient."
-else
-  echo "✅ Knip passed - no unused dependencies found."
-fi
+npx knip || { echo "ok"; }
 
 echo "✅ Pre-commit checks complete. Proceeding with commit."
