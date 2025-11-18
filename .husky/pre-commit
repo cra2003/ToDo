@@ -1,6 +1,14 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+echo "🔍 Running Prettier (auto-format)..."
+npx prettier --write . --log-level warn
+PRETTIER_RESULT=$?
+
+if [ $PRETTIER_RESULT -ne 0 ]; then
+  echo "⚠️  Prettier encountered issues, but continuing..."
+fi
+
 echo "🔍 Running ESLint..."
 
 npm run lint

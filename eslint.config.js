@@ -17,13 +17,12 @@ export default [
         beforeEach: "readonly",
         afterEach: "readonly",
         before: "readonly",
-        after: "readonly"
-      }
+        after: "readonly",
+      },
     },
     rules: {
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "no-console": "off"
-    }
-  }
+      "no-console": "off",
+    },
+  },
 ];
-

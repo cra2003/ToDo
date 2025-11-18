@@ -1,12 +1,13 @@
-import Database from 'better-sqlite3';
-import dotenv from 'dotenv';
+import Database from "better-sqlite3";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 export const db = new Database(process.env.DB_FILE);
 
 // Create table if it doesn't exist
-db.prepare(`
+db.prepare(
+  `
   CREATE TABLE IF NOT EXISTS todos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -14,6 +15,7 @@ db.prepare(`
     priority TEXT DEFAULT 'medium',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
-`).run();
+`,
+).run();
 
-console.log('✅ SQLite database ready:', process.env.DB_FILE);
+console.log("✅ SQLite database ready:", process.env.DB_FILE);

@@ -1,0 +1,15 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE" | tr -d '\n')
+
+PATTERN="^ticket-[0-9]+:"
+
+if echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  echo "✅ Commit message format valid."
+else
+  echo "❌ Invalid commit message format."
+  echo "📝 Required: ticket-123: your message"
+  exit 1
+fi

@@ -1,4 +1,4 @@
-import { TodoModel } from '../models/todoModel.js';
+import { TodoModel } from "../models/todoModel.js";
 
 export const todoService = {
   async getAll() {
