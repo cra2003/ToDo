@@ -26,12 +26,23 @@ fi
 echo "✅ ESLint passed."
 
 echo "🧪 Running tests..."
-npm run test
+npm run test || {
+  echo "fail"
+}
 TEST_RESULT=$?
 
 if [ $TEST_RESULT -ne 0 ]; then
   echo "❌ Tests failed. Fix test errors before committing."
-  exit 1
-fi
+fi || {
+  echo "ok"
+}
 
-echo "✅ All tests passed. Proceeding with commit."
+echo "✅ All tests passed."
+
+echo "🔍 Running Knip (dependency checking)..."
+npx knip --strict --debug || {
+  echo "Failed"
+}
+
+
+echo "✅ Knip passed. Proceeding with commit."

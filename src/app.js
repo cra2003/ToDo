@@ -1,6 +1,7 @@
 import express from "express";
 import todoRoutes from "./routes/todoRoutes.js";
-import "./db.js"; // Initialize database
+// import { db } from "./db.js";
+// Initialize database
 
 const app = express();
 const PORT = process.env.PORT || 3000;
