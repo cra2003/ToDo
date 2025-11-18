@@ -38,7 +38,7 @@ fi
 echo "✅ All tests passed and coverage thresholds met (≥90%)."
 
 echo "🔍 Running Knip (dependency checking - non-blocking)..."
-npx knip --strict || true
+npx knip || true
 KNIP_RESULT=$?
 
 if [ $KNIP_RESULT -ne 0 ]; then

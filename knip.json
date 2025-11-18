@@ -3,16 +3,6 @@
   "entry": ["src/app.js"],
   "project": ["src/**/*.js", "tests/**/*.js"],
   "ignore": [],
-  "ignoreDependencies": [
-    "husky",
-    "prettier",
-    "eslint",
-    "knip",
-    "c8",
-    "mocha",
-    "nodemon",
-    "better-sqlite3",
-    "dotenv"
-  ],
+  "ignoreDependencies": ["husky", "prettier", "eslint", "knip"],
   "ignoreBinaries": ["husky"]
 }
