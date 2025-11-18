@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-export const db = new Database(process.env.DB_FILE);
+const db = new Database(process.env.DB_FILE);
 
 // Create table if it doesn't exist
 db.prepare(
