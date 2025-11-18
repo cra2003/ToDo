@@ -4,7 +4,7 @@
 COMMIT_MSG_FILE=$1
 COMMIT_MSG=$(cat "$COMMIT_MSG_FILE" | tr -d '\n')
 
-PATTERN="^ticket-[0-9]+:"
+PATTERN="^ticket-[0-9]{3}:"
 
 if echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
   echo "✅ Commit message format valid."
