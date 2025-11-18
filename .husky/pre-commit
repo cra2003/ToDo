@@ -23,4 +23,15 @@ if [ $RESULT -ne 0 ]; then
   exit 1
 fi
 
-echo "✅ ESLint passed. Proceeding with commit."
+echo "✅ ESLint passed."
+
+echo "🧪 Running tests..."
+npm run test
+TEST_RESULT=$?
+
+if [ $TEST_RESULT -ne 0 ]; then
+  echo "❌ Tests failed. Fix test errors before committing."
+  exit 1
+fi
+
+echo "✅ All tests passed. Proceeding with commit."
