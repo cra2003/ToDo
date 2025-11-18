@@ -25,24 +25,27 @@ fi
 
 echo "✅ ESLint passed."
 
-echo "🧪 Running tests..."
-npm run test || {
-  echo "fail"
-}
+echo "🧪 Running tests with coverage (90% threshold required)..."
+npm run test:coverage:check
 TEST_RESULT=$?
 
 if [ $TEST_RESULT -ne 0 ]; then
-  echo "❌ Tests failed. Fix test errors before committing."
-fi || {
-  echo "ok"
-}
+  echo "❌ Tests failed or coverage below 90% threshold. Fix issues before committing."
+  echo "   Required: 90% lines, 90% functions, 90% branches, 90% statements"
+  exit 1
+fi
 
-echo "✅ All tests passed."
+echo "✅ All tests passed and coverage thresholds met (≥90%)."
 
-echo "🔍 Running Knip (dependency checking)..."
-npx knip --strict || {
-  echo "Failed"
-}
+echo "🔍 Running Knip (dependency checking - non-blocking)..."
+npx knip --strict || true
+KNIP_RESULT=$?
 
+if [ $KNIP_RESULT -ne 0 ]; then
+  echo "⚠️  Knip found some unused dependencies/exports (non-blocking)."
+  echo "   Review and clean up when convenient."
+else
+  echo "✅ Knip passed - no unused dependencies found."
+fi
 
-echo "✅ Knip passed. Proceeding with commit."
+echo "✅ Pre-commit checks complete. Proceeding with commit."

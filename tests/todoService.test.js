@@ -57,4 +57,55 @@ describe("Todo Service Layer", () => {
     expect(result).to.be.true;
     expect(TodoModel.delete.calledOnceWith(1)).to.be.true;
   });
+
+  it("should get a todo by id", async () => {
+    const mockTodo = { id: 1, title: "Test Todo", completed: 0 };
+    sandbox.stub(TodoModel, "getById").returns(mockTodo);
+
+    const result = await todoService.getById(1);
+
+    expect(result).to.deep.equal(mockTodo);
+    expect(TodoModel.getById.calledOnceWith(1)).to.be.true;
+  });
+
+  it("should return undefined when getting non-existent todo", async () => {
+    sandbox.stub(TodoModel, "getById").returns(undefined);
+
+    const result = await todoService.getById(999);
+
+    expect(result).to.be.undefined;
+    expect(TodoModel.getById.calledOnceWith(999)).to.be.true;
+  });
+
+  it("should handle service errors gracefully", async () => {
+    sandbox.stub(TodoModel, "getAll").throws(new Error("Database error"));
+
+    try {
+      await todoService.getAll();
+      expect.fail("Should have thrown an error");
+    } catch (error) {
+      expect(error).to.be.an("error");
+      expect(error.message).to.include("Database error");
+    }
+  });
+
+  it("should pass through update data correctly", async () => {
+    const updateData = { title: "Updated", completed: 1, priority: "high" };
+    const updatedTodo = { id: 1, ...updateData };
+    sandbox.stub(TodoModel, "update").returns(updatedTodo);
+
+    const result = await todoService.update(1, updateData);
+
+    expect(result).to.deep.equal(updatedTodo);
+    expect(TodoModel.update.calledOnceWith(1, updateData)).to.be.true;
+  });
+
+  it("should return false when delete fails", async () => {
+    sandbox.stub(TodoModel, "delete").returns(false);
+
+    const result = await todoService.delete(999);
+
+    expect(result).to.be.false;
+    expect(TodoModel.delete.calledOnceWith(999)).to.be.true;
+  });
 });

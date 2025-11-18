@@ -24,8 +24,10 @@ export const todoController = {
   async create(req, res, next) {
     try {
       const { title, priority } = req.body;
-      if (!title) return res.status(400).json({ error: "Title is required" });
-      const todo = await todoService.create({ title, priority });
+      if (!title || !title.trim()) {
+        return res.status(400).json({ error: "Title is required" });
+      }
+      const todo = await todoService.create({ title: title.trim(), priority });
       res.status(201).json(todo);
     } catch (err) {
       next(err);

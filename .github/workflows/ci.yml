@@ -8,7 +8,7 @@ on:
 
 jobs:
   ci:
-    name: Run Lint, Tests, Formatting & Knip
+    name: Run Lint, Tests, Coverage, Formatting & Knip
     runs-on: ubuntu-latest
 
     steps:
@@ -53,7 +53,23 @@ jobs:
         run: npx knip
 
       # ------------------------------------------------------
-      # Run Tests — Mocha, Jest, Vitest... (your choice)
+      # Run Tests with Coverage — Mocha with c8
+      # ------------------------------------------------------
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+
+      # ------------------------------------------------------
+      # Check Coverage Thresholds (90% required)
+      # ------------------------------------------------------
+      - name: Check coverage thresholds
+        run: npm run test:coverage:check
+        env:
+          NODE_ENV: test
+
+      # ------------------------------------------------------
+      # Upload Coverage Reports as Artifacts
       # ------------------------------------------------------
       - name: Run tests
         run: npm test
