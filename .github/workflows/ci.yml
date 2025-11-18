@@ -3,7 +3,7 @@ name: CI Pipeline
 # Run CI on any push or pull request
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
 
 jobs:
@@ -70,4 +70,3 @@ jobs:
           else
             echo "⚠️ No build script found — skipping."
           fi
-
