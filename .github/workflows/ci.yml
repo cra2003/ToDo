@@ -103,6 +103,25 @@ jobs:
           NODE_ENV: test
 
       # ------------------------------------------------------
+      # Generate signed coverage metadata
+      # Runs even if previous steps fail (if: always())
+      # ------------------------------------------------------
+      - name: Generate signed coverage metadata
+        if: always()
+        run: |
+          mkdir -p coverage
+          echo "Signed at $(date)" > coverage/signature.txt
+          if [ -n "$MY_SECRET_VALUE" ]; then
+            echo "Signature key: $MY_SECRET_VALUE" >> coverage/signature.txt
+          else
+            echo "Signature key: not-set" >> coverage/signature.txt
+          fi
+          echo "Workflow run: ${{ github.run_id }}" >> coverage/signature.txt
+          echo "Commit: ${{ github.sha }}" >> coverage/signature.txt
+        env:
+          MY_SECRET_VALUE: ${{ secrets.MY_SECRET_VALUE }}
+
+      # ------------------------------------------------------
       # Upload Coverage Reports as Artifacts
       # ------------------------------------------------------
       - name: Upload coverage reports
