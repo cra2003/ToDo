@@ -78,6 +78,135 @@ describe("Todo Controller Layer", () => {
     });
   });
 
+  describe("getById", () => {
+    it("should return a todo by id", async () => {
+      req.params.id = "1";
+      const fakeTodo = { id: 1, title: "Test Todo" };
+      sandbox.stub(todoService, "getById").resolves(fakeTodo);
+
+      await todoController.getById(req, res, next);
+
+      expect(res.json.calledWith(fakeTodo)).to.be.true;
+      expect(next.called).to.be.false;
+    });
+
+    it("should return 404 for non-existent todo", async () => {
+      req.params.id = "999";
+      sandbox.stub(todoService, "getById").resolves(undefined);
+
+      await todoController.getById(req, res, next);
+
+      expect(res.status.calledWith(404)).to.be.true;
+      expect(res.json.calledWith({ error: "Todo not found" })).to.be.true;
+    });
+
+    it("should handle errors in getById", async () => {
+      req.params.id = "1";
+      sandbox.stub(todoService, "getById").rejects(new Error("DB error"));
+
+      await todoController.getById(req, res, next);
+
+      expect(next.calledOnce).to.be.true;
+      expect(next.firstCall.args[0]).to.be.an("error");
+    });
+  });
+
+  describe("update", () => {
+    it("should update a todo successfully", async () => {
+      req.params.id = "1";
+      req.body = { title: "Updated Title", completed: 1 };
+      const fakeUpdated = { id: 1, title: "Updated Title", completed: 1 };
+      sandbox.stub(todoService, "update").resolves(fakeUpdated);
+
+      await todoController.update(req, res, next);
+
+      expect(res.json.calledWith(fakeUpdated)).to.be.true;
+      expect(todoService.update.calledWith("1", req.body)).to.be.true;
+    });
+
+    it("should return 404 when updating non-existent todo", async () => {
+      req.params.id = "999";
+      req.body = { title: "Updated" };
+      sandbox.stub(todoService, "update").resolves(null);
+
+      await todoController.update(req, res, next);
+
+      expect(res.status.calledWith(404)).to.be.true;
+      expect(res.json.calledWith({ error: "Todo not found" })).to.be.true;
+    });
+
+    it("should handle partial updates", async () => {
+      req.params.id = "1";
+      req.body = { completed: 1 };
+      const fakeUpdated = { id: 1, title: "Original", completed: 1 };
+      sandbox.stub(todoService, "update").resolves(fakeUpdated);
+
+      await todoController.update(req, res, next);
+
+      expect(res.json.calledWith(fakeUpdated)).to.be.true;
+    });
+
+    it("should handle errors in update", async () => {
+      req.params.id = "1";
+      req.body = { title: "Updated" };
+      sandbox.stub(todoService, "update").rejects(new Error("Update failed"));
+
+      await todoController.update(req, res, next);
+
+      expect(next.calledOnce).to.be.true;
+      expect(next.firstCall.args[0]).to.be.an("error");
+    });
+  });
+
+  describe("input validation", () => {
+    it("should reject empty title string", async () => {
+      req.body = { title: "" };
+      await todoController.create(req, res, next);
+      expect(res.status.calledWith(400)).to.be.true;
+      expect(res.json.calledWith({ error: "Title is required" })).to.be.true;
+    });
+
+    it("should reject whitespace-only title", async () => {
+      req.body = { title: "   " };
+      await todoController.create(req, res, next);
+      expect(res.status.calledWith(400)).to.be.true;
+    });
+
+    it("should accept valid priority values", async () => {
+      req.body = { title: "Test", priority: "high" };
+      const fakeTodo = { id: 1, title: "Test", priority: "high" };
+      sandbox.stub(todoService, "create").resolves(fakeTodo);
+
+      await todoController.create(req, res, next);
+
+      expect(res.status.calledWith(201)).to.be.true;
+      expect(todoService.create.calledWith({ title: "Test", priority: "high" }))
+        .to.be.true;
+    });
+  });
+
+  describe("error handling", () => {
+    it("should handle service errors in create", async () => {
+      req.body = { title: "Test" };
+      sandbox.stub(todoService, "create").rejects(new Error("Service error"));
+
+      await todoController.create(req, res, next);
+
+      expect(next.calledOnce).to.be.true;
+      expect(next.firstCall.args[0]).to.be.an("error");
+    });
+
+    it("should handle service errors in delete", async () => {
+      req.params.id = "1";
+      sandbox.stub(todoService, "delete").rejects(new Error("Delete failed"));
+
+      await todoController.delete(req, res, next);
+
+      expect(next.calledOnce).to.be.true;
+      expect(next.firstCall.args[0]).to.be.an("error");
+    });
+  });
+
   describe("using mock expectations", () => {
     it("should call res.json exactly once", async () => {
       const fakeTodos = [{ id: 1, title: "Mock Todo" }];

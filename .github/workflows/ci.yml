@@ -7,35 +7,69 @@ on:
   pull_request:
 
 jobs:
-  ci:
-    name: Run Lint, Tests, Formatting & Knip
-    runs-on: ubuntu-latest
+  # ------------------------------------------------------------
+  # 1. SETUP JOB — caching + installing dependencies
+  # ------------------------------------------------------------
+  setup:
+    name: Setup & Cache Dependencies
+    runs-on: self-hosted
 
     steps:
-      # ------------------------------------------------------
-      # Checkout Repo
-      # ------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------
-      # Setup Node
-      # ------------------------------------------------------
+      # Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      # ------------------------------------------------------
+      # Cache node_modules using actions/cache
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
       # Install dependencies
-      # ------------------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+
+  # ------------------------------------------------------------
+  # 2. MAIN CI JOB – depends on setup
+  # ------------------------------------------------------------
+  ci:
+    name: Run Lint, Tests, Coverage, Formatting & Knip
+    runs-on: self-hosted
+    needs: setup # Job dependency - waits for setup to complete
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Cache node_modules (same cache key as setup job)
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
+      # Install dependencies (will use cache if available)
       - name: Install dependencies
         run: npm ci
 
       # ------------------------------------------------------
       # Prettier — formatting validation
-      # DOES NOT auto-fix, only warns/fails
       # ------------------------------------------------------
       - name: Run Prettier check
         run: npx prettier --check .
@@ -53,7 +87,53 @@ jobs:
         run: npx knip
 
       # ------------------------------------------------------
-      # Run Tests — Mocha, Jest, Vitest... (your choice)
+      # Run Tests with Coverage — Mocha with c8
+      # ------------------------------------------------------
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+
+      # ------------------------------------------------------
+      # Check Coverage Thresholds (90% required)
+      # ------------------------------------------------------
+      - name: Check coverage thresholds
+        run: npm run test:coverage:check
+        env:
+          NODE_ENV: test
+
+      # ------------------------------------------------------
+      # Generate signed coverage metadata
+      # Runs even if previous steps fail (if: always())
+      # ------------------------------------------------------
+      - name: Generate signed coverage metadata
+        if: always()
+        run: |
+          mkdir -p coverage
+          echo "Signed at $(date)" > coverage/signature.txt
+          if [ -n "$MY_SECRET_VALUE" ]; then
+            echo "Signature key: $MY_SECRET_VALUE" >> coverage/signature.txt
+          else
+            echo "Signature key: not-set" >> coverage/signature.txt
+          fi
+          echo "Workflow run: ${{ github.run_id }}" >> coverage/signature.txt
+          echo "Commit: ${{ github.sha }}" >> coverage/signature.txt
+        env:
+          MY_SECRET_VALUE: ${{ secrets.MY_SECRET_VALUE }}
+
+      # ------------------------------------------------------
+      # Upload Coverage Reports as Artifacts
+      # ------------------------------------------------------
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+      # ------------------------------------------------------
+      # Run regular tests
       # ------------------------------------------------------
       - name: Run tests
         run: npm test

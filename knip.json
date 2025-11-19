@@ -1,8 +1,16 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": ["src/app.js"],
-  "project": ["src/**/*.js"],
+  "entry": ["src/app.js", "tests/**/*.test.js"],
+  "project": ["src/**/*.js", "tests/**/*.js"],
   "ignore": [],
-  "ignoreDependencies": ["husky", "prettier", "eslint", "knip"],
+  "ignoreDependencies": [
+    "husky",
+    "prettier",
+    "eslint",
+    "knip",
+    "c8",
+    "mocha",
+    "nodemon"
+  ],
   "ignoreBinaries": ["husky"]
 }
